@@ -4,11 +4,25 @@ import faqRepository from '../models/FAQRepository';
 import messageRepository from '../models/MessageRepository';
 import conversationRepository from '../models/ConversationRepository';
 import { Message } from '../types/database';
+import { 
+  InputValidator, 
+  AIRateLimiter, 
+  ResponseValidator,
+  ValidationError,
+  AIServiceError,
+  RateLimitError 
+} from '../utils/validation';
 
 /**
  * Chat Service - Orchestrates FAQ retrieval, caching, and AI responses
  */
 export class ChatService {
+  private rateLimiter: AIRateLimiter;
+
+  constructor() {
+    // 10 requests per minute per conversation
+    this.rateLimiter = new AIRateLimiter(10, 60000);
+  }
   /**
    * Search for relevant FAQs based on user query
    */
@@ -117,6 +131,7 @@ export class ChatService {
 
   /**
    * Process a complete chat interaction (save messages + generate response)
+   * Enhanced with validation, rate limiting, and content moderation
    */
   async processChat(
     conversationId: string,
@@ -132,11 +147,52 @@ export class ChatService {
     sources: string[];
   }> {
     try {
-      // 1. Save user message
+      // 1. Validate conversation ID
+      const idValidation = InputValidator.validateConversationId(conversationId);
+      if (!idValidation.valid) {
+        throw new ValidationError(idValidation.error || 'Invalid conversation ID', 'conversationId');
+      }
+
+      // 2. Validate and sanitize user message
+      const messageValidation = InputValidator.validateChatMessage(userMessage);
+      if (!messageValidation.valid) {
+        throw new ValidationError(messageValidation.error || 'Invalid message', 'message');
+      }
+
+      const sanitizedMessage = InputValidator.sanitizeInput(userMessage);
+
+      // 3. Validate region if provided
+      if (options.region) {
+        const regionValidation = InputValidator.validateRegion(options.region);
+        if (!regionValidation.valid) {
+          throw new ValidationError(regionValidation.error || 'Invalid region', 'region');
+        }
+      }
+
+      // 4. Check rate limit
+      const rateLimitCheck = this.rateLimiter.checkLimit(conversationId);
+      if (!rateLimitCheck.allowed) {
+        throw new RateLimitError(
+          `Rate limit exceeded. Please try again in ${rateLimitCheck.resetIn} seconds.`,
+          rateLimitCheck.resetIn || 60
+        );
+      }
+
+      // 5. Content moderation
+      const moderation = await aiService.moderateContent(sanitizedMessage);
+      if (moderation.flagged) {
+        console.warn('⚠️  Flagged content detected:', conversationId);
+        throw new ValidationError(
+          'Your message contains content that violates our guidelines. Please rephrase and try again.',
+          'message'
+        );
+      }
+
+      // 6. Save user message
       const userMsg = await messageRepository.create({
         conversation_id: conversationId,
         sender: 'user',
-        text: userMessage,
+        text: sanitizedMessage,
         metadata: {
           region: options.region,
           userId: options.userId,
@@ -144,14 +200,43 @@ export class ChatService {
         },
       });
 
-      // 2. Generate AI response
-      const { response, sources } = await this.generateResponse(
-        conversationId,
-        userMessage,
-        { region: options.region, includeHistory: true }
-      );
+      // 7. Generate AI response with error handling
+      let response: string;
+      let sources: string[];
 
-      // 3. Save AI response
+      try {
+        const result = await this.generateResponse(
+          conversationId,
+          sanitizedMessage,
+          { region: options.region, includeHistory: true }
+        );
+        response = result.response;
+        sources = result.sources;
+
+        // 8. Validate AI response
+        const responseValidation = ResponseValidator.validateAIResponse(response);
+        if (!responseValidation.valid) {
+          throw new AIServiceError(
+            'AI generated an invalid response',
+            'INVALID_RESPONSE',
+            500
+          );
+        }
+
+        // 9. Check for harmful content in response
+        if (ResponseValidator.containsHarmfulContent(response)) {
+          console.error('❌ Harmful content detected in AI response');
+          response = "I apologize, but I'm unable to provide a response to that query. Please contact our human support team for assistance.";
+        }
+      } catch (error: any) {
+        console.error('❌ AI generation error:', error);
+        
+        // Fallback response
+        response = "I apologize, but I'm experiencing technical difficulties. Please try again in a moment or contact our support team.";
+        sources = [];
+      }
+
+      // 10. Save AI response
       const aiMsg = await messageRepository.create({
         conversation_id: conversationId,
         sender: 'ai',
@@ -162,7 +247,7 @@ export class ChatService {
         },
       });
 
-      // 4. Invalidate message cache since we added new messages
+      // 11. Invalidate message cache
       await cacheService.invalidateConversationCache(conversationId);
 
       return {
@@ -172,8 +257,19 @@ export class ChatService {
         sources,
       };
     } catch (error: any) {
+      // Re-throw known errors
+      if (error instanceof ValidationError || 
+          error instanceof RateLimitError || 
+          error instanceof AIServiceError) {
+        throw error;
+      }
+
       console.error('❌ Process chat error:', error);
-      throw new Error(`Failed to process chat: ${error.message}`);
+      throw new AIServiceError(
+        `Failed to process chat: ${error.message}`,
+        'PROCESS_CHAT_ERROR',
+        500
+      );
     }
   }
 
