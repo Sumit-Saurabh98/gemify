@@ -1,10 +1,11 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { checkHealth as checkDatabaseHealth } from './config/database';
 import { checkRedisHealth } from './config/redis';
+import apiRoutes from './routes';
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +32,9 @@ const limiter = rateLimit({
 });
 
 app.use('/api/', limiter);
+
+// Mount API routes
+app.use('/api', apiRoutes);
 
 // Health check endpoint
 app.get('/health', async (_req: Request, res: Response) => {
@@ -60,7 +64,15 @@ app.get('/', (_req: Request, res: Response) => {
     version: '1.0.0',
     endpoints: {
       health: '/health',
-      api: '/api'
+      api: '/api',
+      chat: {
+        createConversation: 'POST /api/chat/conversations',
+        getConversation: 'GET /api/chat/conversations/:conversationId',
+        getMessages: 'GET /api/chat/conversations/:conversationId/messages',
+        sendMessage: 'POST /api/chat/message',
+        moderate: 'POST /api/chat/moderate',
+        suggestions: 'GET /api/chat/suggestions',
+      }
     }
   });
 });
