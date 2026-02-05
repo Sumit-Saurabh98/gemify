@@ -1,5 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
-import type { Message, ChatState } from './types';
+import type { Message, ChatState } from '../types';
 
 /**
  * Chat state store
@@ -72,7 +72,7 @@ function createChatStore() {
     updateMessage: (id: string, updates: Partial<Message>) => {
       update(state => ({
         ...state,
-        messages: state.messages.map(msg =>
+        messages: state.messages.map((msg: Message) =>
           msg.id === id ? { ...msg, ...updates } : msg
         ),
       }));
@@ -143,7 +143,7 @@ export const hasConversation = derived(
  */
 export const userMessages = derived(
   chatStore,
-  $chatStore => $chatStore.messages.filter(m => m.sender === 'user')
+  $chatStore => $chatStore.messages.filter((m: Message) => m.sender === 'user')
 );
 
 /**
@@ -151,5 +151,5 @@ export const userMessages = derived(
  */
 export const aiMessages = derived(
   chatStore,
-  $chatStore => $chatStore.messages.filter(m => m.sender === 'ai')
+  $chatStore => $chatStore.messages.filter((m: Message) => m.sender === 'ai')
 );

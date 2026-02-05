@@ -3,13 +3,14 @@
   import ChatMessage from '$lib/components/ChatMessage.svelte';
   import ChatInput from '$lib/components/ChatInput.svelte';
   import SuggestedQuestions from '$lib/components/SuggestedQuestions.svelte';
-  import { chatStore, uiStore, type Message } from '$lib';
+  import { chatStore, uiStore, chatService, type Message } from '$lib';
   
   let messagesContainer: HTMLElement;
   
   // Subscribe to stores
   $: messages = $chatStore.messages;
   $: isTyping = $chatStore.isTyping;
+  $: error = $chatStore.error;
   $: showSuggestions = $uiStore.showSuggestions && messages.length === 1;
   
   onMount(() => {
@@ -17,41 +18,17 @@
     chatStore.initialize();
   });
   
-  function handleSendMessage(event: CustomEvent<{ message: string }>) {
+  async function handleSendMessage(event: CustomEvent<{ message: string }>) {
     // Hide suggestions after first message
     uiStore.setShowSuggestions(false);
     
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      sender: 'user',
-      text: event.detail.message,
-      timestamp: new Date().toISOString(),
-    };
+    // Send message via API
+    const success = await chatService.sendMessage(event.detail.message);
     
-    chatStore.addMessage(userMessage);
-    
-    // Simulate AI response (will be replaced with API call)
-    chatStore.setTyping(true);
-    
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: 'ai',
-        text: "Thank you for your message! This is a demo response. Once we integrate with the backend API, I'll provide real AI-powered answers to your questions.",
-        timestamp: new Date().toISOString(),
-        sources: ['FAQ: Shipping', 'Product Catalog'],
-      };
-      
-      chatStore.addMessage(aiMessage);
-      chatStore.setTyping(false);
-      
-      // Scroll to bottom
+    if (success) {
+      // Scroll to bottom after AI response
       setTimeout(scrollToBottom, 100);
-    }, 1500);
-    
-    // Scroll to bottom
-    setTimeout(scrollToBottom, 100);
+    }
   }
   
   function handleSuggestionSelect(event: CustomEvent<{ suggestion: string }>) {
@@ -71,6 +48,10 @@
         messagesContainer.scrollHeight - messagesContainer.scrollTop === messagesContainer.clientHeight;
       uiStore.setScrolledToBottom(isAtBottom);
     }
+  }
+  
+  function dismissError() {
+    chatStore.setError(null);
   }
 </script>
 
@@ -94,6 +75,13 @@
       </div>
     </div>
   </div>
+  
+  {#if error}
+    <div class="error-banner">
+      <span class="error-text">⚠️ {error}</span>
+      <button class="error-dismiss" on:click={dismissError}>✕</button>
+    </div>
+  {/if}
   
   <div 
     class="messages-container" 
@@ -201,6 +189,41 @@
   .status-text {
     font-size: 0.875rem;
     font-weight: 500;
+  }
+  
+  .error-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #fee2e2;
+    border-bottom: 1px solid #ef4444;
+  }
+  
+  .error-text {
+    color: #991b1b;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .error-dismiss {
+    background: none;
+    border: none;
+    color: #991b1b;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    transition: background 0.2s;
+  }
+  
+  .error-dismiss:hover {
+    background: rgba(153, 27, 27, 0.1);
   }
   
   .messages-container {
