@@ -91,6 +91,8 @@
     transition: border-color 0.2s;
     max-height: 120px;
     overflow-y: auto;
+    color: #1f2937;
+    background: white;
   }
   
   .message-input:focus {
