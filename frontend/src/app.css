@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@theme {
+  --color-gaming-purple: #8B5CF6;
+  --color-gaming-blue: #3B82F6;
+  --color-gaming-green: #10B981;
+  --color-gaming-dark: #0F172A;
+  --color-gaming-darker: #020617;
+  
+  --font-family-gaming: 'Inter', system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-gaming-darker);
+    color: white;
+    font-family: var(--font-family-gaming);
+  }
+}
+
+@layer components {
+  .chat-message-user {
+    background: linear-gradient(to right, var(--color-gaming-purple), var(--color-gaming-blue));
+    color: white;
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    max-width: 28rem;
+    margin-left: auto;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  }
+  
+  .chat-message-ai {
+    background-color: rgb(51 65 85);
+    color: white;
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    max-width: 28rem;
+    margin-right: auto;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  }
+  
+  .btn-primary {
+    background-color: var(--color-gaming-blue);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary:hover {
+    background-color: rgb(37 99 235);
+  }
+  
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
