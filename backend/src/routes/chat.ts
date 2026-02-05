@@ -8,6 +8,10 @@ import {
   requireBody,
   requireFields,
 } from '../middleware/validation';
+import {
+  aiLimiter,
+  createConversationLimiter,
+} from '../middleware/security';
 import { ValidationError, RateLimitError, AIServiceError } from '../utils/validation';
 
 const router = Router();
@@ -15,9 +19,11 @@ const router = Router();
 /**
  * POST /api/chat/conversations
  * Create a new conversation
+ * Rate limit: 5 per 15 minutes
  */
 router.post(
   '/conversations',
+  createConversationLimiter,
   requireBody,
   validateCreateConversation,
   async (req: Request, res: Response) => {
@@ -121,9 +127,11 @@ router.get(
 /**
  * POST /api/chat/message
  * Send a message and get AI response
+ * Rate limit: 10 per minute (AI limiter)
  */
 router.post(
   '/message',
+  aiLimiter,
   requireBody,
   requireFields(['message', 'conversationId']),
   validateChatMessage,
