@@ -6,12 +6,18 @@ import rateLimit from 'express-rate-limit';
 import { checkHealth as checkDatabaseHealth } from './config/database';
 import { checkRedisHealth } from './config/redis';
 import apiRoutes from './routes';
+import { errorHandler, notFoundHandler, requestLogger } from './middleware/errorHandler';
 
 // Load environment variables
 dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
+
+// Request logging (development only)
+if (process.env.NODE_ENV === 'development') {
+  app.use(requestLogger);
+}
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -24,8 +30,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000'), // 1 minute
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '30'), // limit each IP to 30 requests per windowMs
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS as string),
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '30'),
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -77,16 +83,11 @@ app.get('/', (_req: Request, res: Response) => {
   });
 });
 
-// 404 handler
-app.use((_req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    error: {
-      code: 'NOT_FOUND',
-      message: 'Endpoint not found'
-    }
-  });
-});
+// 404 handler - must be after all routes
+app.use(notFoundHandler);
+
+// Error handling middleware - must be last
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
