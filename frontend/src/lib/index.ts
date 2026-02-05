@@ -1,3 +1,7 @@
-export { default as ChatMessage } from './components/ChatMessage.svelte';
-export { default as ChatInput } from './components/ChatInput.svelte';
-export { default as SuggestedQuestions } from './components/SuggestedQuestions.svelte';
+/**
+ * Store exports
+ */
+
+export { chatStore, messageCount, hasConversation, userMessages, aiMessages } from './stores/chatStore';
+export { uiStore } from './stores/uiStore';
+export type { Message, Conversation, ChatState, APIResponse } from './types';

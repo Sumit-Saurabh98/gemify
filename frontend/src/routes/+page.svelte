@@ -1,29 +1,27 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import ChatMessage from '$lib/components/ChatMessage.svelte';
   import ChatInput from '$lib/components/ChatInput.svelte';
   import SuggestedQuestions from '$lib/components/SuggestedQuestions.svelte';
+  import { chatStore, uiStore, type Message } from '$lib';
   
-  interface Message {
-    id: string;
-    sender: 'user' | 'ai';
-    text: string;
-    timestamp: string;
-    sources?: string[];
-  }
-  
-  let messages: Message[] = [
-    {
-      id: '1',
-sender: 'ai',
-      text: "Hi! I'm the GamerHub AI assistant. How can I help you today?",
-      timestamp: new Date().toISOString(),
-    }
-  ];
-  
-  let isTyping = false;
   let messagesContainer: HTMLElement;
   
+  // Subscribe to stores
+  $: messages = $chatStore.messages;
+  $: isTyping = $chatStore.isTyping;
+  $: showSuggestions = $uiStore.showSuggestions && messages.length === 1;
+  
+  onMount(() => {
+    // Initialize chat with welcome message
+    chatStore.initialize();
+  });
+  
   function handleSendMessage(event: CustomEvent<{ message: string }>) {
+    // Hide suggestions after first message
+    uiStore.setShowSuggestions(false);
+    
+    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       sender: 'user',
@@ -31,10 +29,11 @@ sender: 'ai',
       timestamp: new Date().toISOString(),
     };
     
-    messages = [...messages, userMessage];
+    chatStore.addMessage(userMessage);
     
-    // Simulate AI response
-    isTyping = true;
+    // Simulate AI response (will be replaced with API call)
+    chatStore.setTyping(true);
+    
     setTimeout(() => {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -44,8 +43,8 @@ sender: 'ai',
         sources: ['FAQ: Shipping', 'Product Catalog'],
       };
       
-      messages = [...messages, aiMessage];
-      isTyping = false;
+      chatStore.addMessage(aiMessage);
+      chatStore.setTyping(false);
       
       // Scroll to bottom
       setTimeout(scrollToBottom, 100);
@@ -62,6 +61,15 @@ sender: 'ai',
   function scrollToBottom() {
     if (messagesContainer) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      uiStore.setScrolledToBottom(true);
+    }
+  }
+  
+  function handleScroll() {
+    if (messagesContainer) {
+      const isAtBottom = 
+        messagesContainer.scrollHeight - messagesContainer.scrollTop === messagesContainer.clientHeight;
+      uiStore.setScrolledToBottom(isAtBottom);
     }
   }
 </script>
@@ -87,9 +95,13 @@ sender: 'ai',
     </div>
   </div>
   
-  <div class="messages-container" bind:this={messagesContainer}>
+  <div 
+    class="messages-container" 
+    bind:this={messagesContainer}
+    on:scroll={handleScroll}
+  >
     <div class="messages-inner">
-      {#if messages.length === 1}
+      {#if showSuggestions}
         <SuggestedQuestions on:select={handleSuggestionSelect} />
       {/if}
       
