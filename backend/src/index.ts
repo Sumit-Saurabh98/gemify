@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import { checkHealth as checkDatabaseHealth } from './config/database';
 
 // Load environment variables
 dotenv.config();
@@ -31,12 +32,15 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Health check endpoint
-app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'ok',
+app.get('/health', async (_req: Request, res: Response) => {
+  const dbHealthy = await checkDatabaseHealth();
+  
+  res.status(dbHealthy ? 200 : 503).json({
+    status: dbHealthy ? 'ok' : 'degraded',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    database: dbHealthy ? 'connected' : 'disconnected'
   });
 });
 
