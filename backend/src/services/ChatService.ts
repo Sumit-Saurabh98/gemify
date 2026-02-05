@@ -77,7 +77,7 @@ export class ChatService {
     const messages = await messageRepository.getRecentMessages(conversationId, limit);
 
     const history = messages.map((msg: Message) => ({
-      role: msg.sender as 'user' | 'assistant',
+      role: (msg.sender === 'ai' ? 'assistant' : msg.sender) as 'user' | 'assistant',
       content: msg.text,
     }));
 
