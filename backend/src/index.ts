@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import { checkHealth as checkDatabaseHealth } from './config/database';
+import { checkRedisHealth } from './config/redis';
 
 // Load environment variables
 dotenv.config();
@@ -33,14 +34,22 @@ app.use('/api/', limiter);
 
 // Health check endpoint
 app.get('/health', async (_req: Request, res: Response) => {
-  const dbHealthy = await checkDatabaseHealth();
+  const [dbHealthy, redisHealthy] = await Promise.all([
+    checkDatabaseHealth(),
+    checkRedisHealth()
+  ]);
   
-  res.status(dbHealthy ? 200 : 503).json({
-    status: dbHealthy ? 'ok' : 'degraded',
+  const overallHealthy = dbHealthy && redisHealthy;
+  
+  res.status(overallHealthy ? 200 : 503).json({
+    status: overallHealthy ? 'ok' : 'degraded',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
-    database: dbHealthy ? 'connected' : 'disconnected'
+    services: {
+      database: dbHealthy ? 'connected' : 'disconnected',
+      redis: redisHealthy ? 'connected' : 'disconnected'
+    }
   });
 });
 
