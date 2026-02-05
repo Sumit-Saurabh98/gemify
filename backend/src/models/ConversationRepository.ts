@@ -87,6 +87,52 @@ export class ConversationRepository {
       messageCount: parseInt(row.message_count)
     };
   }
+
+  /**
+   * Get all conversations with preview (last message)
+   */
+  async getAllWithPreview(limit: number = 50): Promise<Array<{
+    id: string;
+    created_at: string;
+    updated_at: string;
+    lastMessage?: {
+      text: string;
+      sender: string;
+      created_at: string;
+    };
+  }>> {
+    const result = await query(
+      `SELECT 
+        c.id,
+        c.created_at,
+        c.updated_at,
+        m.text as last_message_text,
+        m.sender as last_message_sender,
+        m.created_at as last_message_created_at
+       FROM conversations c
+       LEFT JOIN LATERAL (
+         SELECT text, sender, created_at
+         FROM messages
+         WHERE conversation_id = c.id
+         ORDER BY created_at DESC
+         LIMIT 1
+       ) m ON true
+       ORDER BY c.updated_at DESC
+       LIMIT $1`,
+      [limit]
+    );
+
+    return result.rows.map((row: any) => ({
+      id: row.id,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      lastMessage: row.last_message_text ? {
+        text: row.last_message_text,
+        sender: row.last_message_sender,
+        created_at: row.last_message_created_at,
+      } : undefined,
+    }));
+  }
 }
 
 export default new ConversationRepository();

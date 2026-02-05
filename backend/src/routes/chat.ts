@@ -17,6 +17,33 @@ import { ValidationError, RateLimitError, AIServiceError } from '../utils/valida
 const router = Router();
 
 /**
+ * GET /api/chat/conversations
+ * Get all conversations with preview
+ */
+router.get('/conversations', async (req: Request, res: Response) => {
+  try {
+    const limit = parseInt(req.query.limit as string, 10) || 50;
+
+    const conversations = await chatService.getAllConversations(limit);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        conversations,
+        count: conversations.length,
+      },
+    });
+  } catch (error: any) {
+    console.error('Get conversations error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve conversations',
+      message: error.message,
+    });
+  }
+});
+
+/**
  * POST /api/chat/conversations
  * Create a new conversation
  * Rate limit: 5 per 15 minutes

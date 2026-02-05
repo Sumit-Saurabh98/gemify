@@ -101,6 +101,25 @@ class APIClient {
   }
 
   /**
+   * Get all conversations with preview
+   */
+  async getConversations(limit: number = 50): Promise<APIResponse<{
+    conversations: Array<{
+      id: string;
+      created_at: string;
+      updated_at: string;
+      lastMessage?: {
+        text: string;
+        sender: string;
+        created_at: string;
+      };
+    }>;
+    count: number;
+  }>> {
+    return this.fetch(`/api/chat/conversations?limit=${limit}`);
+  }
+
+  /**
    * Moderate a message
    */
   async moderateMessage(message: string): Promise<APIResponse<{

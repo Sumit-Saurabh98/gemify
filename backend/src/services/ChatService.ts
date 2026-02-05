@@ -340,6 +340,13 @@ export class ChatService {
 
     return suggestions.slice(0, 3);
   }
+
+  /**
+   * Get all conversations with preview
+   */
+  async getAllConversations(limit: number = 50) {
+    return await conversationRepository.getAllWithPreview(limit);
+  }
 }
 
 export default new ChatService();
