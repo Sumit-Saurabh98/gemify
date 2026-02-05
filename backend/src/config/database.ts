@@ -1,8 +1,10 @@
 import { Pool, PoolClient, QueryResult } from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Database configuration
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/db',
+  connectionString: process.env.DATABASE_URL,
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000, // How long a client is allowed to remain idle before being closed
   connectionTimeoutMillis: 2000, // How long to wait for a connection
