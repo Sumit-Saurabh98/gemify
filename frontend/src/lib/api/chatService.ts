@@ -14,7 +14,13 @@ export const chatService = {
     chatStore.setError(null);
 
     try {
-      const response = await apiClient.createConversation(params);
+      // Always send at least region to avoid empty payload
+      const payload = {
+        region: params.region || 'USA',
+        ...(params.userId && { userId: params.userId }),
+      };
+      
+      const response = await apiClient.createConversation(payload);
 
       if (response.success && response.data) {
         chatStore.setConversationId(response.data.conversationId);
