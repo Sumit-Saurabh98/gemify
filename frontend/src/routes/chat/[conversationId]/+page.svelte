@@ -7,8 +7,6 @@
 </script>
 
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
   import ChatMessage from '$lib/components/ChatMessage.svelte';
   import ChatInput from '$lib/components/ChatInput.svelte';
   import SuggestedQuestions from '$lib/components/SuggestedQuestions.svelte';
@@ -17,6 +15,7 @@
   export let data: { conversationId: string };
   
   let messagesContainer: HTMLElement;
+  let currentLoadedId: string = '';
   
   // Subscribe to stores
   $: messages = $chatStore.messages;
@@ -24,21 +23,29 @@
   $: error = $chatStore.error;
   $: showSuggestions = $uiStore.showSuggestions && messages.length === 1;
   
-  onMount(async () => {
-    // Set conversation ID from URL
-    chatStore.setConversationId(data.conversationId);
+  // Reactive: Load messages when conversation ID changes
+  $: if (data.conversationId && data.conversationId !== currentLoadedId) {
+    loadMessagesForConversation(data.conversationId);
+  }
+  
+  async function loadMessagesForConversation(conversationId: string) {
+    currentLoadedId = conversationId;
+    
+    // Set conversation ID in store
+    chatStore.setConversationId(conversationId);
     
     // Load messages for this conversation
-    const response = await apiClient.getMessages(data.conversationId, 50);
+    const response = await apiClient.getMessages(conversationId, 50);
     
-    if (response.success && response.data) {
+    if (response.success && response.data && response.data.messages.length > 0) {
       chatStore.clearMessages();
       response.data.messages.forEach(msg => chatStore.addMessage(msg));
     } else {
-      // Conversation doesn't exist or is empty, add welcome message
+      // Conversation exists but is empty, add welcome message
+      chatStore.clearMessages();
       chatStore.initialize();
     }
-  });
+  }
   
   async function handleSendMessage(event: CustomEvent<{ message: string }>) {
     uiStore.setShowSuggestions(false);

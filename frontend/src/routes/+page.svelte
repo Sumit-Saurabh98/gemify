@@ -4,18 +4,26 @@
   import { apiClient } from '$lib/api';
   
   onMount(async () => {
-    // Create a new conversation and redirect
-    const response = await apiClient.createConversation({ region: 'USA' });
+    // Check if there are existing conversations
+    const response = await apiClient.getConversations(1);
     
-    if (response.success && response.data) {
-      goto(`/chat/${response.data.conversationId}`);
+    if (response.success && response.data && response.data.conversations.length > 0) {
+      // Navigate to most recent conversation
+      goto(`/chat/${response.data.conversations[0].id}`);
+    } else {
+      // Create a new conversation
+      const createResponse = await apiClient.createConversation({ region: 'USA' });
+      
+      if (createResponse.success && createResponse.data) {
+        goto(`/chat/${createResponse.data.conversationId}`);
+      }
     }
   });
 </script>
 
 <div class="loading">
   <div class="spinner"></div>
-  <p>Starting new chat...</p>
+  <p>Loading chat...</p>
 </div>
 
 <style>
