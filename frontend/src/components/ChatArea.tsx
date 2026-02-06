@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAppStore } from '@/lib/store'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -27,7 +26,7 @@ export function ChatArea() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const text = inputValue.trim()
     
@@ -79,7 +78,7 @@ export function ChatArea() {
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
+      <div className="flex-1 p-4 overflow-y-auto">
         {messages.length === 0 && currentConversation ? (
           <div className="text-center text-gray-500 dark:text-gray-400 py-8">
             <p>Start the conversation</p>
@@ -156,7 +155,7 @@ export function ChatArea() {
           </div>
         )}
         <div ref={messagesEndRef} />
-      </ScrollArea>
+      </div>
 
       {/* Suggestions */}
       {messages.length === 0 && currentConversation && (
@@ -184,7 +183,7 @@ export function ChatArea() {
       )}
 
       {/* Input Area */}
-      <div className="p-4 border-t">
+      <div className="p-4 border-t sticky bottom-0 bg-background">
         <form onSubmit={handleSendMessage} className="flex gap-2">
           <Input
             value={inputValue}

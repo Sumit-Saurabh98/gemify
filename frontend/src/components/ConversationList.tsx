@@ -36,7 +36,7 @@ export function ConversationList({ onCreateNew }: ConversationListProps) {
         </Button>
       </div>
       
-      <ScrollArea className="flex-1 px-4">
+      <ScrollArea className="flex-1 px-4 overflow-y-auto">
         {conversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-gray-500">
             <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
