@@ -1,6 +1,6 @@
 import prisma from "../lib/prisma";
 import { generateResponse } from "../utils/generateResponse";
-import { invalidateConversationCache } from "../utils/getCachedFAQSearch";
+import { invalidateConversationCache } from "../services/cache";
 import { moderateContent } from "../utils/moderateContent";
 import { sanitizeInput } from "../utils/sanitizeInput";
 import { containsHarmfulContent, validateAIResponse } from "../utils/validateAIResponse";
