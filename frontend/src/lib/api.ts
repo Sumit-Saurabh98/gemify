@@ -3,6 +3,7 @@ import type {
   Message,
   ApiResponse,
   SendMessageResponse,
+  ErrorResponse,
   CreateConversationResponse,
   GetMessagesResponse,
   GetConversationsResponse,
@@ -52,11 +53,26 @@ class ApiClient {
     return data.messages
   }
 
-  async sendMessage(conversationId: string, text: string): Promise<SendMessageResponse> {
-    return await this.request<SendMessageResponse>(`/messages/${conversationId}`, {
+  async sendMessage(conversationId: string, text: string): Promise<SendMessageResponse | ErrorResponse> {
+    const response = await fetch(`${API_BASE_URL}/messages/${conversationId}`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ text }),
     })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data: ApiResponse<SendMessageResponse | ErrorResponse> = await response.json()
+    
+    if (!data.success) {
+      throw new Error('API request failed')
+    }
+
+    return data.data
   }
 
   async getSuggestions(): Promise<string[]> {

@@ -34,6 +34,12 @@ export interface SendMessageResponse {
   response: string
 }
 
+export interface ErrorResponse {
+  conversationId: string
+  message: string
+  success: boolean
+}
+
 export interface CreateConversationRequest {
   title: string
 }

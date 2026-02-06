@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Send, Bot, User } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 export function ChatArea() {
   const { messages, currentConversation, sendMessage, isLoading, fetchSuggestions } = useAppStore()
@@ -39,6 +40,7 @@ export function ChatArea() {
       await sendMessage(currentConversation.id, text)
     } catch (error) {
       console.error('Failed to send message:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to send message')
     } finally {
       setIsTyping(false)
     }
@@ -47,7 +49,10 @@ export function ChatArea() {
   const handleSuggestionClick = async (suggestion: string) => {
     setInputValue(suggestion)
     const form = document.createElement('form')
-    form.onsubmit = handleSendMessage
+    form.onsubmit = (e: SubmitEvent) => {
+      e.preventDefault()
+      handleSendMessage(e as unknown as React.FormEvent<HTMLFormElement>)
+    }
     form.submit()
   }
 

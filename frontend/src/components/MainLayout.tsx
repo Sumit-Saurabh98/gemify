@@ -3,6 +3,7 @@ import { useAppStore } from '@/lib/store'
 import { ConversationList } from './ConversationList'
 import { ChatArea } from './ChatArea'
 import { NewConversationModal } from './NewConversationModal'
+import toast from 'react-hot-toast'
 
 export function MainLayout() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -11,7 +12,7 @@ export function MainLayout() {
     // Initialize the app by fetching conversations
     fetchConversations().catch((error) => {
       console.error('Failed to fetch conversations:', error)
-      console.error('Failed to load conversations:', error)
+      toast.error('Failed to load conversations. Please refresh the page.')
     })
   }, [fetchConversations])
 
@@ -20,7 +21,7 @@ export function MainLayout() {
     if (currentConversation) {
       fetchMessages(currentConversation.id).catch((error) => {
         console.error('Failed to fetch messages:', error)
-        console.error('Failed to load messages:', error)
+        toast.error('Failed to load messages for this conversation.')
       })
     }
   }, [currentConversation, fetchMessages])

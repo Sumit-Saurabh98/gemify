@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
 import { useAppStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,8 @@ interface ConversationListProps {
 export function ConversationList({ onCreateNew }: ConversationListProps) {
   const { conversations, currentConversation, setCurrentConversation, isLoading } = useAppStore()
   const [isCreating, setIsCreating] = useState(false)
+
+  console.log(isCreating, 'isCreating')
 
   const handleSelectConversation = (conversation: any) => {
     setCurrentConversation(conversation)

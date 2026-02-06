@@ -104,6 +104,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     try {
       const response = await apiClient.sendMessage(conversationId, text)
       
+      // Check if response is an error
+      if ('message' in response && 'success' in response) {
+        // This is an error response
+        throw new Error(response.message)
+      }
+      
       // Add AI response
       const aiMessage: Message = {
         id: response.aiMessageId,
@@ -119,6 +125,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       console.error('Failed to send message:', error)
       // Remove the user message if sending failed
       set({ messages: messages.filter(m => m.id !== userMessage.id) })
+      throw error
     }
   },
 
