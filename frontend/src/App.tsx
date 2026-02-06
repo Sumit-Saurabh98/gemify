@@ -1,10 +1,10 @@
 
-import './App.css'
+import { MainLayout } from './components/MainLayout'
 
 function App() {
   return (
-    <div>
-      Gamer Hub
+    <div className="App">
+      <MainLayout />
     </div>
   )
 }
