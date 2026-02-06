@@ -2,6 +2,9 @@
 
 GamerHub AI is a full-stack e-commerce support chat agent designed to assist users with gaming product queries. It features a React-based frontend and an Express/Node.js backend, leveraging OpenAI's GPT models to provide intelligent, context-aware responses.
 
+<img width="1650" height="1050" alt="SCR-20260206-tpdr" src="https://github.com/user-attachments/assets/00f7c534-8594-4560-b87d-018023611b6e" />
+
+
 ## 🛠 Tech Stack
 
 ### Backend
