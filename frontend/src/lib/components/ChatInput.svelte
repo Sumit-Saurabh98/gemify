@@ -30,7 +30,8 @@
   function autoResize() {
     if (textarea) {
       textarea.style.height = 'auto';
-      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+      const newHeight = Math.min(Math.max(textarea.scrollHeight, 44), 120);
+      textarea.style.height = newHeight + 'px';
     }
   }
 </script>
@@ -89,10 +90,12 @@
     resize: none;
     outline: none;
     transition: border-color 0.2s;
+    min-height: 44px;
     max-height: 120px;
     overflow-y: auto;
     color: #1f2937;
     background: white;
+    line-height: 1.5;
   }
   
   .message-input:focus {
