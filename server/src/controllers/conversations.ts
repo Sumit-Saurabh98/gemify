@@ -1,9 +1,20 @@
 import type { Request, Response } from "express";
 import prisma from "../lib/prisma";
+import { warmConversationCache } from "../services/cache";
 
 export const getConversations = async (_: Request, res: Response) => {
   try {
-    const conversation = await prisma.conversation.findMany();
+    const conversations = await prisma.conversation.findMany({
+      orderBy: {
+        createdAt: 'asc'  // Order by creation date ascending (oldest first)
+      }
+    });
+
+    // Reverse the order so the oldest conversation appears first
+    const conversation = conversations.reverse();
+
+    // Warm cache for all conversations on app load
+    await warmConversationCache(conversations);
 
     res.status(200).json({
       success: true,

@@ -29,9 +29,7 @@ export type FaqsMinAggregateOutputType = {
   category: string | null
   question: string | null
   answer: string | null
-  region: string | null
   createdAt: Date | null
-  updatedAt: Date | null
 }
 
 export type FaqsMaxAggregateOutputType = {
@@ -39,9 +37,7 @@ export type FaqsMaxAggregateOutputType = {
   category: string | null
   question: string | null
   answer: string | null
-  region: string | null
   createdAt: Date | null
-  updatedAt: Date | null
 }
 
 export type FaqsCountAggregateOutputType = {
@@ -49,9 +45,7 @@ export type FaqsCountAggregateOutputType = {
   category: number
   question: number
   answer: number
-  region: number
   createdAt: number
-  updatedAt: number
   _all: number
 }
 
@@ -61,9 +55,7 @@ export type FaqsMinAggregateInputType = {
   category?: true
   question?: true
   answer?: true
-  region?: true
   createdAt?: true
-  updatedAt?: true
 }
 
 export type FaqsMaxAggregateInputType = {
@@ -71,9 +63,7 @@ export type FaqsMaxAggregateInputType = {
   category?: true
   question?: true
   answer?: true
-  region?: true
   createdAt?: true
-  updatedAt?: true
 }
 
 export type FaqsCountAggregateInputType = {
@@ -81,9 +71,7 @@ export type FaqsCountAggregateInputType = {
   category?: true
   question?: true
   answer?: true
-  region?: true
   createdAt?: true
-  updatedAt?: true
   _all?: true
 }
 
@@ -164,9 +152,7 @@ export type FaqsGroupByOutputType = {
   category: string
   question: string
   answer: string
-  region: string | null
   createdAt: Date
-  updatedAt: Date
   _count: FaqsCountAggregateOutputType | null
   _min: FaqsMinAggregateOutputType | null
   _max: FaqsMaxAggregateOutputType | null
@@ -195,9 +181,7 @@ export type FaqsWhereInput = {
   category?: Prisma.StringFilter<"Faqs"> | string
   question?: Prisma.StringFilter<"Faqs"> | string
   answer?: Prisma.StringFilter<"Faqs"> | string
-  region?: Prisma.StringNullableFilter<"Faqs"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Faqs"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Faqs"> | Date | string
 }
 
 export type FaqsOrderByWithRelationInput = {
@@ -205,9 +189,7 @@ export type FaqsOrderByWithRelationInput = {
   category?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrder
-  region?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
 }
 
 export type FaqsWhereUniqueInput = Prisma.AtLeast<{
@@ -218,9 +200,7 @@ export type FaqsWhereUniqueInput = Prisma.AtLeast<{
   category?: Prisma.StringFilter<"Faqs"> | string
   question?: Prisma.StringFilter<"Faqs"> | string
   answer?: Prisma.StringFilter<"Faqs"> | string
-  region?: Prisma.StringNullableFilter<"Faqs"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Faqs"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Faqs"> | Date | string
 }, "id">
 
 export type FaqsOrderByWithAggregationInput = {
@@ -228,9 +208,7 @@ export type FaqsOrderByWithAggregationInput = {
   category?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrder
-  region?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   _count?: Prisma.FaqsCountOrderByAggregateInput
   _max?: Prisma.FaqsMaxOrderByAggregateInput
   _min?: Prisma.FaqsMinOrderByAggregateInput
@@ -244,9 +222,7 @@ export type FaqsScalarWhereWithAggregatesInput = {
   category?: Prisma.StringWithAggregatesFilter<"Faqs"> | string
   question?: Prisma.StringWithAggregatesFilter<"Faqs"> | string
   answer?: Prisma.StringWithAggregatesFilter<"Faqs"> | string
-  region?: Prisma.StringNullableWithAggregatesFilter<"Faqs"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Faqs"> | Date | string
-  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Faqs"> | Date | string
 }
 
 export type FaqsCreateInput = {
@@ -254,9 +230,7 @@ export type FaqsCreateInput = {
   category: string
   question: string
   answer: string
-  region?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type FaqsUncheckedCreateInput = {
@@ -264,9 +238,7 @@ export type FaqsUncheckedCreateInput = {
   category: string
   question: string
   answer: string
-  region?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type FaqsUpdateInput = {
@@ -274,9 +246,7 @@ export type FaqsUpdateInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
-  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FaqsUncheckedUpdateInput = {
@@ -284,9 +254,7 @@ export type FaqsUncheckedUpdateInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
-  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FaqsCreateManyInput = {
@@ -294,9 +262,7 @@ export type FaqsCreateManyInput = {
   category: string
   question: string
   answer: string
-  region?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
 }
 
 export type FaqsUpdateManyMutationInput = {
@@ -304,9 +270,7 @@ export type FaqsUpdateManyMutationInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
-  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FaqsUncheckedUpdateManyInput = {
@@ -314,9 +278,7 @@ export type FaqsUncheckedUpdateManyInput = {
   category?: Prisma.StringFieldUpdateOperationsInput | string
   question?: Prisma.StringFieldUpdateOperationsInput | string
   answer?: Prisma.StringFieldUpdateOperationsInput | string
-  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type FaqsCountOrderByAggregateInput = {
@@ -324,9 +286,7 @@ export type FaqsCountOrderByAggregateInput = {
   category?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrder
-  region?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
 }
 
 export type FaqsMaxOrderByAggregateInput = {
@@ -334,9 +294,7 @@ export type FaqsMaxOrderByAggregateInput = {
   category?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrder
-  region?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
 }
 
 export type FaqsMinOrderByAggregateInput = {
@@ -344,17 +302,11 @@ export type FaqsMinOrderByAggregateInput = {
   category?: Prisma.SortOrder
   question?: Prisma.SortOrder
   answer?: Prisma.SortOrder
-  region?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
 }
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
-}
-
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -368,9 +320,7 @@ export type FaqsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   category?: boolean
   question?: boolean
   answer?: boolean
-  region?: boolean
   createdAt?: boolean
-  updatedAt?: boolean
 }, ExtArgs["result"]["faqs"]>
 
 export type FaqsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -378,9 +328,7 @@ export type FaqsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   category?: boolean
   question?: boolean
   answer?: boolean
-  region?: boolean
   createdAt?: boolean
-  updatedAt?: boolean
 }, ExtArgs["result"]["faqs"]>
 
 export type FaqsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -388,9 +336,7 @@ export type FaqsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   category?: boolean
   question?: boolean
   answer?: boolean
-  region?: boolean
   createdAt?: boolean
-  updatedAt?: boolean
 }, ExtArgs["result"]["faqs"]>
 
 export type FaqsSelectScalar = {
@@ -398,12 +344,10 @@ export type FaqsSelectScalar = {
   category?: boolean
   question?: boolean
   answer?: boolean
-  region?: boolean
   createdAt?: boolean
-  updatedAt?: boolean
 }
 
-export type FaqsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "category" | "question" | "answer" | "region" | "createdAt" | "updatedAt", ExtArgs["result"]["faqs"]>
+export type FaqsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "category" | "question" | "answer" | "createdAt", ExtArgs["result"]["faqs"]>
 
 export type $FaqsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Faqs"
@@ -413,9 +357,7 @@ export type $FaqsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     category: string
     question: string
     answer: string
-    region: string | null
     createdAt: Date
-    updatedAt: Date
   }, ExtArgs["result"]["faqs"]>
   composites: {}
 }
@@ -843,9 +785,7 @@ export interface FaqsFieldRefs {
   readonly category: Prisma.FieldRef<"Faqs", 'String'>
   readonly question: Prisma.FieldRef<"Faqs", 'String'>
   readonly answer: Prisma.FieldRef<"Faqs", 'String'>
-  readonly region: Prisma.FieldRef<"Faqs", 'String'>
   readonly createdAt: Prisma.FieldRef<"Faqs", 'DateTime'>
-  readonly updatedAt: Prisma.FieldRef<"Faqs", 'DateTime'>
 }
     
 
