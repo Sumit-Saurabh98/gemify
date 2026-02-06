@@ -7,14 +7,13 @@ export class MessageRepository {
    */
   async create(input: CreateMessageInput): Promise<Message> {
     const result = await query(
-      `INSERT INTO messages (conversation_id, sender, text, metadata) 
-       VALUES ($1, $2, $3, $4) 
+      `INSERT INTO messages (conversation_id, sender, text) 
+       VALUES ($1, $2, $3) 
        RETURNING *`,
       [
         input.conversation_id,
         input.sender,
-        input.text,
-        JSON.stringify(input.metadata || {})
+        input.text
       ]
     );
     return result.rows[0];

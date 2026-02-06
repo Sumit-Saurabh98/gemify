@@ -16,10 +16,6 @@ import { ValidationError, RateLimitError, AIServiceError } from '../utils/valida
 
 const router = Router();
 
-/**
- * GET /api/chat/conversations
- * Get all conversations with preview
- */
 router.get('/conversations', async (req: Request, res: Response) => {
   try {
     const limit = parseInt(req.query.limit as string, 10) || 50;
@@ -43,11 +39,6 @@ router.get('/conversations', async (req: Request, res: Response) => {
   }
 });
 
-/**
- * POST /api/chat/conversations
- * Create a new conversation
- * Rate limit: 5 per 15 minutes
- */
 router.post(
   '/conversations',
   createConversationLimiter,
@@ -55,19 +46,17 @@ router.post(
   validateCreateConversation,
   async (req: Request, res: Response) => {
     try {
-      const { region, userId } = req.body;
+      const { title } = req.body;
+      const conversationTitle = title || 'New Conversation';
 
-      const conversation = await chatService.createConversation({
-        region,
-        userId,
-        createdAt: new Date().toISOString(),
-      });
+      const conversation = await chatService.createConversation(conversationTitle);
 
       res.status(201).json({
         success: true,
         data: {
           conversationId: conversation.id,
           createdAt: conversation.created_at,
+          title: conversation.title,
         },
       });
     } catch (error: any) {
@@ -81,46 +70,6 @@ router.post(
   }
 );
 
-/**
- * GET /api/chat/conversations/:conversationId
- * Get conversation details
- */
-router.get(
-  '/conversations/:conversationId',
-  validateConversationIdParam,
-  async (req: Request, res: Response) => {
-    try {
-      const conversationId = req.params.conversationId as string;
-
-      const conversation = await chatService.getConversation(conversationId);
-
-      if (!conversation) {
-        res.status(404).json({
-          success: false,
-          error: 'Conversation not found',
-        });
-        return;
-      }
-
-      res.status(200).json({
-        success: true,
-        data: conversation,
-      });
-    } catch (error: any) {
-      console.error('Get conversation error:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to retrieve conversation',
-        message: error.message,
-      });
-    }
-  }
-);
-
-/**
- * GET /api/chat/conversations/:conversationId/messages
- * Get messages for a conversation
- */
 router.get(
   '/conversations/:conversationId/messages',
   validateConversationIdParam,

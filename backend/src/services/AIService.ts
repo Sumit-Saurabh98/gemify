@@ -102,22 +102,7 @@ ${context}`;
   /**
    * Generate embeddings for text (for semantic search - future enhancement)
    */
-  async generateEmbedding(text: string): Promise<number[]> {
-    try {
-      const client = getOpenAIClient();
-      
-      const response = await client.embeddings.create({
-        model: 'text-embedding-ada-002',
-        input: text,
-      });
-
-      return response.data[0].embedding;
-    } catch (error: any) {
-      console.error('❌ OpenAI embedding error:', error);
-      throw new Error(`Embedding generation error: ${error.message || 'Unknown error'}`);
-    }
-  }
-
+ 
   /**
    * Moderate content for safety
    */

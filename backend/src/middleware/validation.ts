@@ -63,36 +63,14 @@ export const validateChatMessage = (
  * Middleware to validate conversation creation request
  */
 export const validateCreateConversation = (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ): void => {
   try {
-    const { region, userId } = req.body;
-
-    // Validate region if provided
-    if (region) {
-      const regionValidation = InputValidator.validateRegion(region);
-      if (!regionValidation.valid) {
-        res.status(400).json({
-          error: 'Validation Error',
-          message: regionValidation.error,
-          field: 'region',
-        });
-        return;
-      }
-    }
-
-    // Validate userId if provided (basic check)
-    if (userId && (typeof userId !== 'string' || userId.length > 100)) {
-      res.status(400).json({
-        error: 'Validation Error',
-        message: 'User ID must be a string with max 100 characters',
-        field: 'userId',
-      });
-      return;
-    }
-
+    // For the simplified schema, we don't need any validation
+    // since the conversation table only has auto-generated fields
+    // (id, created_at, updated_at) and title is optional
     next();
   } catch (error) {
     res.status(500).json({

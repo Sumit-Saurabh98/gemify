@@ -1,14 +1,15 @@
 import { query } from '../config/database';
-import { Conversation, CreateConversationInput } from '../types/database';
+import { Conversation } from '../types/database';
 
 export class ConversationRepository {
   /**
    * Create a new conversation
    */
-  async create(input: CreateConversationInput = {}): Promise<Conversation> {
+  async create(title?: string): Promise<Conversation> {
+    const conversationTitle = title || 'New Conversation';
     const result = await query(
-      'INSERT INTO conversations (metadata) VALUES ($1) RETURNING *',
-      [JSON.stringify(input.metadata || {})]
+      'INSERT INTO conversations (title) VALUES ($1) RETURNING *',
+      [conversationTitle]
     );
     return result.rows[0];
   }
@@ -35,16 +36,6 @@ export class ConversationRepository {
     return result.rows;
   }
 
-  /**
-   * Update conversation metadata
-   */
-  async updateMetadata(id: string, metadata: Record<string, any>): Promise<Conversation | null> {
-    const result = await query(
-      'UPDATE conversations SET metadata = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
-      [JSON.stringify(metadata), id]
-    );
-    return result.rows[0] || null;
-  }
 
   /**
    * Delete conversation (cascades to messages)
@@ -80,9 +71,9 @@ export class ConversationRepository {
     return {
       conversation: {
         id: row.id,
+        title: row.title,
         created_at: row.created_at,
-        updated_at: row.updated_at,
-        metadata: row.metadata
+        updated_at: row.updated_at
       },
       messageCount: parseInt(row.message_count)
     };
@@ -93,6 +84,7 @@ export class ConversationRepository {
    */
   async getAllWithPreview(limit: number = 50): Promise<Array<{
     id: string;
+    title: string;
     created_at: string;
     updated_at: string;
     lastMessage?: {
@@ -104,6 +96,7 @@ export class ConversationRepository {
     const result = await query(
       `SELECT 
         c.id,
+        c.title,
         c.created_at,
         c.updated_at,
         m.text as last_message_text,
@@ -124,6 +117,7 @@ export class ConversationRepository {
 
     return result.rows.map((row: any) => ({
       id: row.id,
+      title: row.title,
       created_at: row.created_at,
       updated_at: row.updated_at,
       lastMessage: row.last_message_text ? {

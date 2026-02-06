@@ -276,16 +276,17 @@ export class ChatService {
   /**
    * Create a new conversation
    */
-  async createConversation(metadata?: Record<string, any>) {
-    return await conversationRepository.create({ metadata });
+  async createConversation(title?: string) {
+    const conversationTitle = title || 'New Conversation';
+    return await conversationRepository.create(conversationTitle);
   }
 
   /**
    * Get conversation details
    */
-  async getConversation(conversationId: string) {
-    return await conversationRepository.findById(conversationId);
-  }
+  // async getConversation(conversationId: string) {
+  //   return await conversationRepository.findById(conversationId);
+  // }
 
   /**
    * Get conversation messages

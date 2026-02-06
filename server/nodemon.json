@@ -1,0 +1,13 @@
+{
+  "watch": ["src"],
+  "ext": "ts,js,json",
+  "ignore": ["src/**/*.spec.ts", "dist"],
+  "exec": "tsx src/index.ts",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "events": {
+    "start": "echo 'Server starting...'",
+    "crash": "echo 'Server crashed, restarting...'"
+  }
+}
